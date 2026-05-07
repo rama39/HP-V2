@@ -11,8 +11,9 @@ char hexaKeys[ROWS][COLS] = {
   {'-','0','+'}
 };
 // __ C2 R1 C1 R4 C3 R3 R2 __
+// __ 18 33 35 37 40 38 36 __
 //byte rowPins[ROWS] = {35, 40, 33, 37}, colPins[COLS] = {36, 34, 38};
-byte rowPins[ROWS] = {34, 36, 38, 40}, colPins[COLS] = {33, 35, 37};
+byte rowPins[ROWS] = {33, 36, 38, 37}, colPins[COLS] = {35, 18, 40};
 //initialize an instance of class NewKeypad
 Keypad teclado = Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS); 
 
@@ -86,19 +87,19 @@ void draw(void) {
   sprintf(print, "%s        %s", prevMod, modStr);
   display_.drawString(0,7, print);
 
-  Serial.printf("%3i / %3i | m:%c M:%c | s:%i f:%i | prev: '%s', mod: '%s'\n", HP, HPMAX, morrendo?'s':'n', morto?'s':'n', sucessos, falhas, prevMod, modStr);
+  //Serial.printf("%3i / %3i | m:%c M:%c | s:%i f:%i | prev: '%s', mod: '%s'\n", HP, HPMAX, morrendo?'s':'n', morto?'s':'n', sucessos, falhas, prevMod, modStr);
 }
 
 //================================================================================================
 // LEDS
 
-#define VERDE_1 2
-#define VERDE_2 4
-#define VERDE_3 6
-#define AMARELO 11
-#define VERMELHO_1 7
-#define VERMELHO_2 5
-#define VERMELHO_3 3
+#define VERDE_1 1
+#define VERDE_2 2
+#define VERDE_3 4
+#define AMARELO 7
+#define VERMELHO_1 9
+#define VERMELHO_2 11
+#define VERMELHO_3 12
 
 void computeLeds() {
   digitalWrite(AMARELO, (morrendo)?HIGH:LOW);
@@ -150,7 +151,7 @@ void loadFlags() {
 // UTILITIES
 
 //update HPMAX
-#define UPDATEMAX 10
+#define UPDATEMAX 6
 
 // Atualiza leds, printa ultima atualização, reseta entrada
 void confirma(char modCha) {
@@ -175,7 +176,7 @@ void setup(){
 
   Serial.begin(9600);
 
-  Wire.begin(8, 9);
+  Wire.begin(5, 3);
   display_.begin();
   display_.setPowerSave(0);
 
