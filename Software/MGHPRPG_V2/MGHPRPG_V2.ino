@@ -174,7 +174,10 @@ void setup(){
   pinMode(VERDE_3, OUTPUT);
   pinMode(AMARELO, OUTPUT);
 
-  Serial.begin(9600);
+  //pinMode(UPDATEMAX, INPUT_PULLUP); // GPIO6 ---- button ---- GND
+  pinMode(UPDATEMAX, INPUT); // vcc -- button -- GPIO6 -- resistor -- gnd
+
+  //Serial.begin(9600);
 
   Wire.begin(5, 3);
   display_.begin();
@@ -203,10 +206,22 @@ void loop(){
 
   char b = teclado.getKey();
   if (!b) {
-    unsigned long prev = millis();
-    while (digitalRead(UPDATEMAX)==1); 
-    if ((millis()-prev)>100) b='U';
-    while (digitalRead(UPDATEMAX)); 
+    // Versão com Input pullup
+    /*if (digitalRead(UPDATEMAX) == LOW) {
+      delay(20);
+      if (digitalRead(UPDATEMAX) == LOW) {
+        b = 'U';
+        while (digitalRead(UPDATEMAX) == LOW) delay(1);
+      }
+    }*/
+    // Versão com Input
+    if (digitalRead(UPDATEMAX) == HIGH) {
+      delay(20);
+      if (digitalRead(UPDATEMAX) == HIGH) {
+        b = 'U';
+        while (digitalRead(UPDATEMAX) == HIGH) delay(1);
+      }
+    }
   }
 
   if (morto) {
