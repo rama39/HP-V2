@@ -33,9 +33,6 @@ int HPMAX = 128, HP = HPMAX;
 int modNum = 0, len = 0; uint8_t modStr[4] = "   ", prevMod[5] = "    ";
 bool morrendo = 0, morto = 0; int falhas = 0, sucessos = 0;
 
-void drawClear() {
-}
-
 void drawHP(void) {
 
   int frac, fulls, edgeLen, col, row;
@@ -76,6 +73,16 @@ void drawHP(void) {
   char print[32];
   sprintf(print, "%3i /%3i", HP, HPMAX);
   display_.drawString(0,3, print);
+}
+
+void drawVoid(void) {
+  static const uint8_t void_tile[128] = {};
+  display_.drawTile(0, 0, 16, (uint8_t*)void_tile);
+  display_.drawTile(0, 3, 16, (uint8_t*)void_tile);
+  display_.drawTile(0, 4, 16, (uint8_t*)void_tile);
+  char print[32];
+  sprintf(print, "               ", prevMod, modStr);
+  display_.drawString(0,7, print);
 }
 
 void draw(void) {
@@ -153,6 +160,11 @@ void loadFlags() {
 //update HPMAX
 #define UPDATEMAX 6
 
+// numero de milisegundos para desligar tela
+const int tempo_tela = 10000;
+unsigned long timer_tela = 0;
+bool off_tela = 0;
+
 // Atualiza leds, printa ultima atualização, reseta entrada
 void confirma(char modCha) {
   computeLeds();
@@ -198,7 +210,6 @@ void setup(){
     EEPROM.write(sucessosADDR, 0), EEPROM.write(falhasADDR, 0);
   }
 
-  drawClear();
   draw();
 }
 
@@ -281,8 +292,23 @@ void loop(){
 
     draw();
     computeLeds();
+    timer_tela = millis();
+    off_tela = 0;
 
   }
+
+  if(!off_tela && ((millis()-timer_tela) > tempo_tela)) {
+    off_tela = 1;
+    drawVoid();
+    digitalWrite(AMARELO, LOW);
+    digitalWrite(VERMELHO_1, LOW);
+    digitalWrite(VERMELHO_2, LOW);
+    digitalWrite(VERMELHO_3, LOW);
+    digitalWrite(VERDE_1, LOW);
+    digitalWrite(VERDE_2, LOW);
+    digitalWrite(VERDE_3, LOW);
+  }
+  if(off_tela) delay(20);
 }
 
 //================================================================================================
